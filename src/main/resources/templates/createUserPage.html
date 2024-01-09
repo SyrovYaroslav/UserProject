@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список элементов</title>
+</head>
+<body>
+
+<h1>New User:</h1>
+<form action="/user/create" method="post">
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">Create</button>
+</form>
+
+<!--<a href="/user" type="button" class="btn btn-outline-primary btn-block mb-2">-->
+<!--    Відмінити-->
+<!--</a>-->
+</body>
+</html>

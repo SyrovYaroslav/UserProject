@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список элементов</title>
+</head>
+
+<body>
+
+<h1>Список элементов:</h1>
+
+
+<ul>
+    <li th:each="element : ${UserList}">
+        <span th:text="${element}"></span>
+        <form action="/user/contacts" method="post" style="display: inline-block;">
+            <button type="submit" th:attr="name='id', value=${element.getUser_id()}">Contact</button>
+        </form>
+        <form action="/user/delete" method="post" style="display: inline-block;">
+            <button type="submit" th:attr="name='id', value=${element.getUser_id()}">Delete</button>
+        </form>
+        <form action="/user/edit" method="get" style="display: inline-block;">
+            <button type="submit" th:attr="name='id', value=${element.getUser_id()}">Edit</button>
+        </form>
+    </li>
+</ul>
+
+<a href="/user/create" type="button" class="btn btn-primary">Create</a>
+</body>
+</html>
