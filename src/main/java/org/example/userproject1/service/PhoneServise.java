@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -31,5 +30,31 @@ public class PhoneServise {
                 .stream()
                 .filter(o -> Objects.equals(o.getUser().getUser_id(), user.getUser_id()))
                 .collect(Collectors.toList());
+    }
+
+    public void createContact(Phone phone) {
+        phoneRepository.save(phone);
+    }
+
+    public void deleteById(long id) {
+        phoneRepository.deleteById(id);
+    }
+
+    public Phone getPhone(long id){
+        Phone phone;
+        try {
+            phone = phoneRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        } catch (EntityNotFoundException e) {
+            throw new IllegalArgumentException("Note with id=" + id + " does not exist");
+        }
+        return phone;
+    }
+
+    public void update(Phone phone) {
+        long id = phone.getId();
+        if (!phoneRepository.existsById(id)) {
+            throw new IllegalArgumentException("User with id=" + id + " does not exist");
+        }
+        phoneRepository.save(phone);
     }
 }

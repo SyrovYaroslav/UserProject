@@ -2,14 +2,13 @@ package org.example.userproject1.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.example.userproject1.entity.Phone;
 import org.example.userproject1.entity.User;
 import org.example.userproject1.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 
 @RequiredArgsConstructor
@@ -47,13 +46,4 @@ public class UserSevise{
         userRepository.save(user);
     }
 
-    public Set<Phone> userContacts(long id) {
-        User user;
-        try {
-            user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        }catch (EntityNotFoundException e) {
-            throw new IllegalArgumentException("User with id=" + id + " does not exist");
-        }
-        return user.getPhones();
-    }
 }

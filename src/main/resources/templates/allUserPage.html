@@ -13,8 +13,8 @@
 <ul>
     <li th:each="element : ${UserList}">
         <span th:text="${element}"></span>
-        <form action="/user/contacts" method="post" style="display: inline-block;">
-            <button type="submit" th:attr="name='id', value=${element.getUser_id()}">Contact</button>
+        <form th:action="@{'/user/contacts/' + ${element.getUser_id()}}" method="get" style="display: inline-block;">
+            <button type="submit" >Contact</button>
         </form>
         <form action="/user/delete" method="post" style="display: inline-block;">
             <button type="submit" th:attr="name='id', value=${element.getUser_id()}">Delete</button>
