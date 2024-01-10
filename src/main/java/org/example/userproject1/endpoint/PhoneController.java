@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.userproject1.entity.Phone;
 import org.example.userproject1.service.PhoneServise;
 import org.example.userproject1.service.UserSevise;
+import org.example.userproject1.validator.PhoeValidator;
+import org.example.userproject1.validator.UserValidator;
+import org.example.userproject1.validator.ValidationResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,6 +19,7 @@ public class PhoneController {
 
     private final PhoneServise phoneServise;
     private final UserSevise userSevise;
+    private final PhoeValidator phoeValidator;
 
     @GetMapping("/{id}")
     public ModelAndView listContact(@PathVariable long id) {
@@ -36,6 +40,12 @@ public class PhoneController {
         final Phone phoneTemp = new Phone();
         phoneTemp.setPhone(phone);
         phoneTemp.setUser(userSevise.getUser(id));
+        ValidationResult validationResult = phoeValidator.isValid(phoneTemp);
+        if(validationResult.isValid()){
+            return new ModelAndView("createContactPage")
+                    .addObject("errors", validationResult.getErrors())
+                    .addObject("UserId", id);
+        }
         phoneServise.createContact(phoneTemp);
         return new ModelAndView(new RedirectView("/user/contacts/" + id));
     }
@@ -67,6 +77,14 @@ public class PhoneController {
         phone.setId(contact_id);
         phone.setPhone(phone_number);
         phone.setUser(userSevise.getUser(id));
+        ValidationResult validationResult = phoeValidator.isValid(phone);
+        if(validationResult.isValid()){
+            return new ModelAndView("editContactPage")
+                    .addObject("errors", validationResult.getErrors())
+                    .addObject("Contact", phone.getPhone())
+                    .addObject("ContactId", phone.getId())
+                    .addObject("UserId", id);
+        }
         phoneServise.update(phone);
         return new ModelAndView(new RedirectView("/user/contacts/" + id));
     }

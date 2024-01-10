@@ -10,11 +10,13 @@
 <form th:href="@{'/user/contacts/' + ${UserId} + '/create'}" method="post">
     <div class="form-group">
         <label for="phone">Phone:</label>
-        <input type="tel" id="phone" name="phone_number" th:value="${Contact}" required pattern="\+[0-9]{10}" title="Please enter a valid phone number (e.g., +1234567890)">
+        <input type="text" id="phone" name="phone_number" th:value="${Contact}" >
     </div>
     <button type="submit" th:attr="name='contact_id', value=${ContactId}">Edit</button>
 </form>
-
+<div>
+    <p th:each="error : ${errors}" th:text="${error.getMessage()}"/>
+</div>
 <!--<a href="/user" type="button" class="btn btn-outline-primary btn-block mb-2">-->
 <!--    Відмінити-->
 <!--</a>-->

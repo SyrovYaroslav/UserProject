@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.userproject1.entity.User;
 import org.example.userproject1.service.PhoneServise;
 import org.example.userproject1.service.UserSevise;
+import org.example.userproject1.validator.UserValidator;
+import org.example.userproject1.validator.ValidationResult;
+import org.example.userproject1.validator.Validator;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UserController {
 
     private final UserSevise userSevise;
+    private final UserValidator userValidator;
 
     @GetMapping("")
     public ModelAndView list() {
@@ -39,6 +43,11 @@ public class UserController {
         final User user = new User();
         user.setMail(email);
         user.setPassword(password);
+        ValidationResult validationResult = userValidator.isValid(user);
+        if(validationResult.isValid()){
+            return new ModelAndView("createUserPage")
+                    .addObject("errors", validationResult.getErrors());
+        }
         userSevise.create(user);
         return new ModelAndView(new RedirectView("/user"));
     }
@@ -65,9 +74,13 @@ public class UserController {
         user.setUser_id(id);
         user.setMail(email);
         user.setPassword(password);
+        ValidationResult validationResult = userValidator.isValid(user);
+        if(validationResult.isValid()){
+            return new ModelAndView("editUserPage")
+                    .addObject("errors", validationResult.getErrors())
+                    .addObject("User", user);
+        }
         userSevise.update(user);
         return new ModelAndView(new RedirectView("/user"));
     }
-
-
 }
