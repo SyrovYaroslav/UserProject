@@ -1,7 +1,6 @@
 package org.example.userproject1.validator;
 
 import lombok.RequiredArgsConstructor;
-import org.example.userproject1.entity.Phone;
 import org.example.userproject1.entity.User;
 import org.example.userproject1.repository.UserRepository;
 import org.springframework.stereotype.Component;

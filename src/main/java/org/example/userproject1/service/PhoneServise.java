@@ -22,7 +22,7 @@ public class PhoneServise {
         try {
             user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         }catch (EntityNotFoundException e) {
-            throw new IllegalArgumentException("Note with id=" + id + " does not exist");
+            throw new IllegalArgumentException("User with id=" + id + " does not exist");
         }
         Phone phone;
         return phoneRepository.
@@ -45,7 +45,7 @@ public class PhoneServise {
         try {
             phone = phoneRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         } catch (EntityNotFoundException e) {
-            throw new IllegalArgumentException("Note with id=" + id + " does not exist");
+            throw new IllegalArgumentException("Phone with id=" + id + " does not exist");
         }
         return phone;
     }
