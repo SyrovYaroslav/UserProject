@@ -2,7 +2,6 @@ package org.example.userproject1.service;
 
 import org.example.userproject1.entity.User;
 import org.example.userproject1.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserServiseTest {
 
     @InjectMocks
-    private UserSevise userSevise;
+    private UserServise userServise;
 
     @Mock
     private UserRepository userRepository;
@@ -42,7 +41,7 @@ public class UserServiseTest {
 
         Mockito.when(userRepository.findAll()).thenReturn(userList);
 
-        List<User> result = userSevise.listAll();
+        List<User> result = userServise.listAll();
 
         assertEquals(userList, result);
     }
@@ -51,7 +50,7 @@ public class UserServiseTest {
     void createUserTest(){
         Mockito.when(userRepository.save(user1)).thenReturn(user1);
 
-        User createdUser = userSevise.create(user1);
+        User createdUser = userServise.create(user1);
 
         assertEquals(user1, createdUser);
     }
@@ -65,26 +64,26 @@ public class UserServiseTest {
     @Test
     void getUserTest(){
         Mockito.when(userRepository.findById(user1.getUser_id())).thenReturn(Optional.of(user1));
-        User result = userSevise.getUser(user1.getUser_id());
+        User result = userServise.getUser(user1.getUser_id());
         assertEquals(user1, result);
     }
 
     @Test
     void getUserExceptionTest(){
         Mockito.when(userRepository.findById(user1.getUser_id())).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> userSevise.getUser(user1.getUser_id()));
+        assertThrows(IllegalArgumentException.class, () -> userServise.getUser(user1.getUser_id()));
     }
 
     @Test
     void updateUserTest(){
         Mockito.when(userRepository.existsById(user1.getUser_id())).thenReturn(true);
-        userSevise.update(user1);
+        userServise.update(user1);
         Mockito.verify(userRepository, Mockito.times(1)).save(user1);
     }
 
     @Test
     void updateNotExistUserTest(){
         Mockito.when(userRepository.existsById(user1.getUser_id())).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> userSevise.update(user1));
+        assertThrows(IllegalArgumentException.class, () -> userServise.update(user1));
     }
 }

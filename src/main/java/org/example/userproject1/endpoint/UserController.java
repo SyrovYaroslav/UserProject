@@ -2,11 +2,9 @@ package org.example.userproject1.endpoint;
 
 import lombok.RequiredArgsConstructor;
 import org.example.userproject1.entity.User;
-import org.example.userproject1.service.PhoneServise;
-import org.example.userproject1.service.UserSevise;
+import org.example.userproject1.service.UserServise;
 import org.example.userproject1.validator.UserValidator;
 import org.example.userproject1.validator.ValidationResult;
-import org.example.userproject1.validator.Validator;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,13 +18,13 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserSevise userSevise;
+    private final UserServise userServise;
     private final UserValidator userValidator;
 
     @GetMapping("")
     public ModelAndView list() {
         ModelAndView result = new ModelAndView("allUserPage");
-        result.addObject("UserList", userSevise.listAll());
+        result.addObject("UserList", userServise.listAll());
         return result;
     }
 
@@ -48,20 +46,20 @@ public class UserController {
             return new ModelAndView("createUserPage")
                     .addObject("errors", validationResult.getErrors());
         }
-        userSevise.create(user);
+        userServise.create(user);
         return new ModelAndView(new RedirectView("/user"));
     }
 
     @PostMapping("/delete")
     public RedirectView delete(@RequestParam long id) {
-        userSevise.deleteById(id);
+        userServise.deleteById(id);
         return new RedirectView("/user");
     }
 
     @GetMapping("/edit")
     public ModelAndView edit(@RequestParam long id) {
         ModelAndView result = new ModelAndView("editUserPage");
-        User user = userSevise.getUser(id);
+        User user = userServise.getUser(id);
         result.addObject("User", user);
         return result;
     }
@@ -80,7 +78,7 @@ public class UserController {
                     .addObject("errors", validationResult.getErrors())
                     .addObject("User", user);
         }
-        userSevise.update(user);
+        userServise.update(user);
         return new ModelAndView(new RedirectView("/user"));
     }
 }

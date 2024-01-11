@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class UserSevise{
+public class UserServise {
     private final UserRepository userRepository;
     public List<User> listAll() {
         return new ArrayList<>(userRepository.findAll());

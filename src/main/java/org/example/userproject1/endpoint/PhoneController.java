@@ -3,9 +3,8 @@ package org.example.userproject1.endpoint;
 import lombok.RequiredArgsConstructor;
 import org.example.userproject1.entity.Phone;
 import org.example.userproject1.service.PhoneServise;
-import org.example.userproject1.service.UserSevise;
+import org.example.userproject1.service.UserServise;
 import org.example.userproject1.validator.PhoeValidator;
-import org.example.userproject1.validator.UserValidator;
 import org.example.userproject1.validator.ValidationResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class PhoneController {
 
     private final PhoneServise phoneServise;
-    private final UserSevise userSevise;
+    private final UserServise userServise;
     private final PhoeValidator phoeValidator;
 
     @GetMapping("/{id}")
@@ -39,7 +38,7 @@ public class PhoneController {
                                 @RequestParam String phone) {
         final Phone phoneTemp = new Phone();
         phoneTemp.setPhone(phone);
-        phoneTemp.setUser(userSevise.getUser(id));
+        phoneTemp.setUser(userServise.getUser(id));
         ValidationResult validationResult = phoeValidator.isValid(phoneTemp);
         if(validationResult.isValid()){
             return new ModelAndView("createContactPage")
@@ -76,7 +75,7 @@ public class PhoneController {
         final Phone phone = new Phone();
         phone.setId(contact_id);
         phone.setPhone(phone_number);
-        phone.setUser(userSevise.getUser(id));
+        phone.setUser(userServise.getUser(id));
         ValidationResult validationResult = phoeValidator.isValid(phone);
         if(validationResult.isValid()){
             return new ModelAndView("editContactPage")

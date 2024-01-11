@@ -24,7 +24,6 @@ public class PhoneServise {
         }catch (EntityNotFoundException e) {
             throw new IllegalArgumentException("User with id=" + id + " does not exist");
         }
-        Phone phone;
         return phoneRepository.
                 findAll()
                 .stream()

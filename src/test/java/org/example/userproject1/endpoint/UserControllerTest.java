@@ -1,7 +1,8 @@
 package org.example.userproject1.endpoint;
 
 import org.example.userproject1.entity.User;
-import org.example.userproject1.service.UserSevise;
+import org.example.userproject1.repository.UserRepository;
+import org.example.userproject1.service.UserServise;
 import org.example.userproject1.validator.Error;
 import org.example.userproject1.validator.UserValidator;
 import org.example.userproject1.validator.ValidationResult;
@@ -12,39 +13,39 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
     @MockBean
-    private UserSevise userSevise;
+    private UserServise userServise;
     @MockBean
     private UserValidator userValidator;
+    @MockBean
+    private UserRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void listUserTest() throws Exception{
+    void listUserTest() throws Exception {
         User user1 = new User(1L, "asdasd@gmail.com", "1234");
         User user2 = new User(2L, "asdas4@gmail.com", "12534");
 
         List<User> userList = List.of(user1, user2);
 
-        Mockito.when(userSevise.listAll()).thenReturn(userList);
+        Mockito.when(userServise.listAll()).thenReturn(userList);
 
         mockMvc.perform(get("/user"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("allUserPage"))
                 .andExpect(model().attribute("UserList", userList));
 
-        verify(userSevise, Mockito.times(1)).listAll();
+        verify(userServise, times(1)).listAll();
     }
 
     @Test
@@ -56,10 +57,12 @@ public class UserControllerTest {
 
     @Test
     void postCreateUserTest() throws Exception {
-        User user1 = new User(1L, "asdasd@gmail.com", "1234");
+        User user1 = new User();
+        user1.setMail("asdasd@gmail.com");
+        user1.setPassword("1234");
         ValidationResult validationResult = new ValidationResult();
         when(userValidator.isValid(user1)).thenReturn(validationResult);
-        when(userSevise.create(user1)).thenReturn(user1);
+        when(userServise.create(user1)).thenReturn(user1);
 
 
         mockMvc.perform(post("/user/create")
@@ -67,10 +70,31 @@ public class UserControllerTest {
                         .param("password", user1.getPassword()))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user"))
-                .andExpect(model().attributeDoesNotExist("errors"));
+                .andExpect(model().attributeDoesNotExist(("errors")));
 
-        verify(userSevise).create(user1);
+        verify(userServise, times(1)).create(user1);
         verify(userValidator).isValid(user1);
+    }
+
+    @Test
+    void postCreateNonValidUserTest() throws Exception {
+        User user1 = new User();
+        user1.setMail("asdas7d@gmail.com");
+        user1.setPassword("1234");
+        ValidationResult validationResult = new ValidationResult();
+        validationResult.add(Error.of("invalid.mail", "Mail is empty!"));
+        when(userValidator.isValid(any(User.class))).thenReturn(validationResult);
+        when(userServise.create(user1)).thenReturn(user1);
+
+        mockMvc.perform(post("/user/create")
+                        .param("email", "test@gmail.com")
+                        .param("password", "password"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("createUserPage"))
+                .andExpect(model().attribute("errors", validationResult.getErrors()));
+
+
+        verify(userServise, never()).create(user1);
     }
 
     @Test
@@ -82,21 +106,61 @@ public class UserControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user"));
 
-        verify(userSevise, Mockito.times(1)).deleteById(user1.getUser_id());
+        verify(userServise, times(1)).deleteById(user1.getUser_id());
     }
 
     @Test
     void getUpdateUserTest() throws Exception {
         User user1 = new User(1L, "asdasd@gmail.com", "1234");
 
-        Mockito.when(userSevise.getUser(user1.getUser_id())).thenReturn(user1);
+        when(userServise.getUser(user1.getUser_id())).thenReturn(user1);
 
         mockMvc.perform(get("/user/edit")
                         .param("id", String.valueOf(user1.getUser_id())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("editUserPage"))
                 .andExpect(model().attribute("User", user1));
-        verify(userSevise, Mockito.times(1)).getUser(user1.getUser_id());
+        verify(userServise, times(1)).getUser(user1.getUser_id());
     }
 
+    @Test
+    void postUpdateUserTest() throws Exception {
+        User user1 = new User(1L, "asdasd@gmail.com", "1234");
+
+        ValidationResult validationResult = new ValidationResult();
+
+        when(userValidator.isValid(user1)).thenReturn(validationResult);
+        doNothing().when(userServise).update(user1);
+
+        mockMvc.perform(post("/user/edit")
+                        .param("id", String.valueOf(user1.getUser_id()))
+                        .param("email", String.valueOf(user1.getMail()))
+                        .param("password", String.valueOf(user1.getPassword())))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/user"))
+                .andExpect(model().attributeDoesNotExist(("errors")));
+
+        verify(userServise, times(1)).update(user1);
+        verify(userValidator).isValid(user1);
+    }
+
+    @Test
+    void postUpdateNonValidUserTest() throws Exception {
+        User user1 = new User(1L, "asdasd@gmail.com", "1234");
+
+        ValidationResult validationResult = new ValidationResult();
+        validationResult.add(Error.of("invalid.mail", "Mail is empty!"));
+        when(userValidator.isValid(user1)).thenReturn(validationResult);
+        doNothing().when(userServise).update(user1);
+
+        mockMvc.perform(post("/user/edit")
+                        .param("id", String.valueOf(user1.getUser_id()))
+                        .param("email", String.valueOf(user1.getMail()))
+                        .param("password", String.valueOf(user1.getPassword())))
+                .andExpect(status().isOk())
+                .andExpect(view().name("editUserPage"))
+                .andExpect(model().attribute("errors", validationResult.getErrors()));
+
+        verify(userServise, never()).create(user1);
+    }
 }
