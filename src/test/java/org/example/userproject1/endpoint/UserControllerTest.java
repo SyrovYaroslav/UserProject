@@ -27,8 +27,6 @@ public class UserControllerTest {
     private UserSevise userSevise;
     @MockBean
     private UserValidator userValidator;
-    @MockBean
-    private ValidationResult validationResult;
     @Autowired
     private MockMvc mockMvc;
 
@@ -59,7 +57,7 @@ public class UserControllerTest {
     @Test
     void postCreateUserTest() throws Exception {
         User user1 = new User(1L, "asdasd@gmail.com", "1234");
-
+        ValidationResult validationResult = new ValidationResult();
         when(userValidator.isValid(user1)).thenReturn(validationResult);
         when(userSevise.create(user1)).thenReturn(user1);
 
@@ -68,8 +66,37 @@ public class UserControllerTest {
                         .param("email", user1.getMail())
                         .param("password", user1.getPassword()))
                 .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/user"))
+                .andExpect(model().attributeDoesNotExist("errors"));
+
+        verify(userSevise).create(user1);
+        verify(userValidator).isValid(user1);
+    }
+
+    @Test
+    void deleteUserTest() throws Exception {
+        User user1 = new User(1L, "asdasd@gmail.com", "1234");
+
+        mockMvc.perform(post("/user/delete")
+                        .param("id", String.valueOf(user1.getUser_id())))
+                .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user"));
 
-        verify(userSevise, Mockito.times(1)).create(user1);
+        verify(userSevise, Mockito.times(1)).deleteById(user1.getUser_id());
     }
+
+    @Test
+    void getUpdateUserTest() throws Exception {
+        User user1 = new User(1L, "asdasd@gmail.com", "1234");
+
+        Mockito.when(userSevise.getUser(user1.getUser_id())).thenReturn(user1);
+
+        mockMvc.perform(get("/user/edit")
+                        .param("id", String.valueOf(user1.getUser_id())))
+                .andExpect(status().isOk())
+                .andExpect(view().name("editUserPage"))
+                .andExpect(model().attribute("User", user1));
+        verify(userSevise, Mockito.times(1)).getUser(user1.getUser_id());
+    }
+
 }
