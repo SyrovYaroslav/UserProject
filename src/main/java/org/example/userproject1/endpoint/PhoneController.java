@@ -16,7 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class PhoneController {
 
     private final PhoneService phoneService;
-    private final UserService userService;
+
 
     @GetMapping("/{id}")
     public ModelAndView listContact(@PathVariable long id) {
@@ -34,16 +34,13 @@ public class PhoneController {
     @PostMapping("/{id}/create")
     public ModelAndView create(@PathVariable long id,
                                 @RequestParam String phone) {
-        final Phone phoneTemp = new Phone();
-        phoneTemp.setPhoneNumber(phone);
-        phoneTemp.setUser(userService.getUser(id));
 
-        PhoneDto phoneDto = phoneService.saveContact(phoneTemp);
 
-        if (phoneDto.getError().isEmpty()){
-            return new ModelAndView(new RedirectView("/user/contacts/" + id));
-        }
-        return new ModelAndView("createContactPage")
+        PhoneDto phoneDto = phoneService.saveContact(id, phone);
+
+        return phoneDto.getError().isEmpty()
+                ?new ModelAndView(new RedirectView("/user/contacts/" + id))
+                :new ModelAndView("createContactPage")
                 .addObject("errors", phoneDto.getError())
                 .addObject("UserId", id);
     }
@@ -68,21 +65,15 @@ public class PhoneController {
     @PostMapping("/{id}/edit")
     public ModelAndView edit(@PathVariable long id,
                              @RequestParam String phone_number,
-                             @RequestParam long contact_id
+                             @RequestParam long phone_id
                              ){
-        final Phone phone = new Phone();
-        phone.setId(contact_id);
-        phone.setPhoneNumber(phone_number);
-        phone.setUser(userService.getUser(id));
+        PhoneDto phoneDto = phoneService.saveContact(id, phone_number, phone_id);
 
-        PhoneDto phoneDto = phoneService.saveContact(phone);
-
-        if (phoneDto.getError().isEmpty()){
-            return new ModelAndView(new RedirectView("/user/contacts/" + id));
-        }
-        return new ModelAndView("editContactPage")
+        return phoneDto.getError().isEmpty()
+                ?new ModelAndView(new RedirectView("/user/contacts/" + id))
+                :new ModelAndView("editContactPage")
                 .addObject("errors", phoneDto.getError())
-                .addObject("Phone", phone)
+                .addObject("Phone", phoneDto)
                 .addObject("UserId", id);
     }
 }

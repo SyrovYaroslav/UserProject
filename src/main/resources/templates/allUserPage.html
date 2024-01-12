@@ -2,28 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Список элементов</title>
+    <title>User List</title>
 </head>
 
 <body>
 
-<h1>Список элементов:</h1>
+<h1 style="text-align: center;">User List:</h1>
 
-
-<ul>
+<ol>
     <li th:each="element : ${UserList}">
-        <span th:text="${element}"></span>
         <form th:action="@{'/user/contacts/' + ${element.getId()}}" method="get" style="display: inline-block;">
-            <button type="submit" >Contact</button>
-        </form>
-        <form action="/user/delete" method="post" style="display: inline-block;">
-            <button type="submit" th:attr="name='id', value=${element.getId()}">Delete</button>
+            <button type="submit">Contact</button>
         </form>
         <form action="/user/edit" method="get" style="display: inline-block;">
             <button type="submit" th:attr="name='id', value=${element.getId()}">Edit</button>
         </form>
+        <form action="/user/delete" method="post" style="display: inline-block;">
+            <button type="submit" th:attr="name='id', value=${element.getId()}">Delete</button>
+        </form>
+        <span th:text="'email: ' + ${element.getMail()} + ' password: ' + ${element.getPassword()}"></span>
     </li>
-</ul>
+</ol>
 
 <a href="/user/create" type="button" class="btn btn-primary">Create</a>
 </body>

@@ -23,9 +23,9 @@ public class PhoneService {
     private final PhoneRepository phoneRepository;
     private final UserRepository userRepository;
     private final PhoneValidator phoneValidator;
+    private final UserService userService;
     public List<Phone> userContacts(long id) {
-        User user;
-        user = userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id=" + id + " does not exist"));
         return phoneRepository.
                 findAll()
@@ -34,18 +34,43 @@ public class PhoneService {
                 .collect(Collectors.toList());
     }
 
-    public PhoneDto saveContact(Phone phone) {
+    public PhoneDto saveContact(long id, String phone) {
+        Phone phoneTemp = Phone.builder()
+                .phoneNumber(phone)
+                .user(userService.getUser(id))
+                .build();
         PhoneDto phoneDto = PhoneDto.builder()
-                .phoneNumber(phone.getPhoneNumber())
-                .user(phone.getUser())
+                .phoneNumber(phone)
+                .user(userService.getUser(id))
                 .error(new ArrayList<>())
                 .build();
-        ValidationResult validationResult = phoneValidator.isValid(phone);
+        ValidationResult validationResult = phoneValidator.isValid(phoneTemp);
         if(validationResult.isValid()){
             phoneDto.setError(validationResult.getErrors());
             return phoneDto;
         }
-        phoneRepository.save(phone);
+        phoneRepository.save(phoneTemp);
+        return phoneDto;
+    }
+
+    public PhoneDto saveContact(long id, String phone, long phone_id) {
+        Phone phoneTemp = Phone.builder()
+                .id(phone_id)
+                .phoneNumber(phone)
+                .user(userService.getUser(id))
+                .build();
+        PhoneDto phoneDto = PhoneDto.builder()
+                .id(phone_id)
+                .phoneNumber(phone)
+                .user(userService.getUser(id))
+                .error(new ArrayList<>())
+                .build();
+        ValidationResult validationResult = phoneValidator.isValid(phoneTemp);
+        if(validationResult.isValid()){
+            phoneDto.setError(validationResult.getErrors());
+            return phoneDto;
+        }
+        phoneRepository.save(phoneTemp);
         return phoneDto;
     }
 

@@ -24,10 +24,35 @@ public class UserService {
         return new ArrayList<>(userRepository.findAll());
     }
 
-    public UserDto saveUser(User user) {
+    public UserDto saveUser(String email, String password) {
+        User user = User.builder()
+                .mail(email)
+                .password(password)
+                .build();
         UserDto userDto = UserDto.builder()
-                .mail(user.getMail())
-                .password(user.getPassword())
+                .mail(email)
+                .password(password)
+                .error(new ArrayList<>())
+                .build();
+        ValidationResult validationResult = userValidator.isValid(user);
+        if(validationResult.isValid()){
+            userDto.setError(validationResult.getErrors());
+            return userDto;
+        }
+        userRepository.save(user);
+        return userDto;
+    }
+
+    public UserDto saveUser(String email, String password, long id) {
+        User user = User.builder()
+                .id(id)
+                .mail(email)
+                .password(password)
+                .build();
+        UserDto userDto = UserDto.builder()
+                .id(id)
+                .mail(email)
+                .password(password)
                 .error(new ArrayList<>())
                 .build();
         ValidationResult validationResult = userValidator.isValid(user);

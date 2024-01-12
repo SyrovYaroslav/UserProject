@@ -35,14 +35,10 @@ public class UserController {
     @PostMapping("/create")
     public ModelAndView create(@RequestParam String email,
                             @RequestParam String password) {
-        final User user = new User();
-        user.setMail(email);
-        user.setPassword(password);
-        UserDto userDto = userService.saveUser(user);
-        if (userDto.getError().isEmpty()){
-            return new ModelAndView(new RedirectView("/user"));
-        }
-        return new ModelAndView("createUserPage")
+        UserDto userDto = userService.saveUser(email, password);
+        return userDto.getError().isEmpty()
+                ?new ModelAndView(new RedirectView("/user"))
+                :new ModelAndView("createUserPage")
                 .addObject("errors", userDto.getError());
     }
 
@@ -64,18 +60,11 @@ public class UserController {
     public ModelAndView edit(@RequestParam long id,
                              @RequestParam String email,
                              @RequestParam String password) {
-        final User user = new User();
-        user.setId(id);
-        user.setMail(email);
-        user.setPassword(password);
-
-        UserDto userDto = userService.saveUser(user);
-
-        if (userDto.getError().isEmpty()){
-            return new ModelAndView(new RedirectView("/user"));
-        }
-        return new ModelAndView("editUserPage")
+        UserDto userDto = userService.saveUser(email, password, id);
+        return userDto.getError().isEmpty()
+                ?new ModelAndView(new RedirectView("/user"))
+                :new ModelAndView("editUserPage")
                 .addObject("errors", userDto.getError())
-                .addObject("User", user);
+                .addObject("User", userDto);
     }
 }
