@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Component
-public class PhoeValidator implements Validator<Phone>{
+public class PhoneValidator implements Validator<Phone>{
     private static final String PHONE_REGEX =
             "^\\+?[0-9]+$";
     private static final Pattern pattern = Pattern.compile(PHONE_REGEX);
@@ -18,12 +18,12 @@ public class PhoeValidator implements Validator<Phone>{
     @Override
     public ValidationResult isValid(Phone phone) {
         ValidationResult validationResult = new ValidationResult();
-        Matcher matcher = pattern.matcher(phone.getPhone());
-        if(phone.getPhone().isEmpty()){
+        Matcher matcher = pattern.matcher(phone.getPhoneNumber());
+        if(phone.getPhoneNumber().isEmpty()){
             validationResult.add(Error.of("invalid.phone", "Phone is empty!"));
         } else if (!matcher.matches()) {
             validationResult.add(Error.of("invalid.phone", "Phone is not matches!"));
-        } else if (phone.getPhone().length() > 15) {
+        } else if (phone.getPhoneNumber().length() > 15) {
             validationResult.add(Error.of("invalid.phone", "Phone is too long!"));
         } else if (!phoneUniqueCheck(phone)) {
             validationResult.add(Error.of("invalid.phone", "Phone is exist!"));
@@ -32,7 +32,7 @@ public class PhoeValidator implements Validator<Phone>{
     }
 
     private boolean phoneUniqueCheck(Phone phone) {
-        return phoneRepository.findAll().stream().noneMatch(o -> o.getPhone().equals(phone.getPhone())
+        return phoneRepository.findAll().stream().noneMatch(o -> o.getPhoneNumber().equals(phone.getPhoneNumber())
                 && !o.getId().equals(phone.getId()));
     }
 }

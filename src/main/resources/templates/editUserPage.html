@@ -16,7 +16,7 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" th:value="${User.getPassword()}">
     </div>
-    <button type="submit" th:attr="name='id', value=${User.getUser_id()}">Edit</button>
+    <button type="submit" th:attr="name='id', value=${User.getId()}">Edit</button>
 </form>
 <div>
     <p th:each="error : ${errors}" th:text="${error.getMessage()}"/>

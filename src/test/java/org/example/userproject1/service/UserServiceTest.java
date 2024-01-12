@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiseTest {
+public class UserServiceTest {
 
     @InjectMocks
-    private UserServise userServise;
+    private UserService userService;
 
     @Mock
     private UserRepository userRepository;
@@ -41,7 +41,7 @@ public class UserServiseTest {
 
         Mockito.when(userRepository.findAll()).thenReturn(userList);
 
-        List<User> result = userServise.listAll();
+        List<User> result = userService.listAll();
 
         assertEquals(userList, result);
     }
@@ -50,40 +50,40 @@ public class UserServiseTest {
     void createUserTest(){
         Mockito.when(userRepository.save(user1)).thenReturn(user1);
 
-        User createdUser = userServise.create(user1);
+        User createdUser = userService.create(user1);
 
         assertEquals(user1, createdUser);
     }
 
     @Test
     void deleteByIdUserTest(){
-        userRepository.deleteById(user1.getUser_id());
-        Mockito.verify(userRepository, Mockito.times(1)).deleteById(user1.getUser_id());
+        userRepository.deleteById(user1.getId());
+        Mockito.verify(userRepository, Mockito.times(1)).deleteById(user1.getId());
     }
 
     @Test
     void getUserTest(){
-        Mockito.when(userRepository.findById(user1.getUser_id())).thenReturn(Optional.of(user1));
-        User result = userServise.getUser(user1.getUser_id());
+        Mockito.when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
+        User result = userService.getUser(user1.getId());
         assertEquals(user1, result);
     }
 
     @Test
     void getUserExceptionTest(){
-        Mockito.when(userRepository.findById(user1.getUser_id())).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> userServise.getUser(user1.getUser_id()));
+        Mockito.when(userRepository.findById(user1.getId())).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> userService.getUser(user1.getId()));
     }
 
     @Test
     void updateUserTest(){
-        Mockito.when(userRepository.existsById(user1.getUser_id())).thenReturn(true);
-        userServise.update(user1);
+        Mockito.when(userRepository.existsById(user1.getId())).thenReturn(true);
+        userService.update(user1);
         Mockito.verify(userRepository, Mockito.times(1)).save(user1);
     }
 
     @Test
     void updateNotExistUserTest(){
-        Mockito.when(userRepository.existsById(user1.getUser_id())).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> userServise.update(user1));
+        Mockito.when(userRepository.existsById(user1.getId())).thenReturn(false);
+        assertThrows(IllegalArgumentException.class, () -> userService.update(user1));
     }
 }

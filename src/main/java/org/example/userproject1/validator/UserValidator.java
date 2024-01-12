@@ -38,6 +38,6 @@ public class UserValidator implements Validator<User>{
 
     private boolean userUniqueCheck(User user) {
         return userRepository.findAll().stream().noneMatch(o -> o.getMail().equals(user.getMail())
-                && !o.getUser_id().equals(user.getUser_id()));
+                && !o.getId().equals(user.getId()));
     }
 }

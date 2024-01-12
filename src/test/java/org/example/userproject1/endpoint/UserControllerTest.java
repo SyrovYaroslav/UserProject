@@ -2,7 +2,7 @@ package org.example.userproject1.endpoint;
 
 import org.example.userproject1.entity.User;
 import org.example.userproject1.repository.UserRepository;
-import org.example.userproject1.service.UserServise;
+import org.example.userproject1.service.UserService;
 import org.example.userproject1.validator.Error;
 import org.example.userproject1.validator.UserValidator;
 import org.example.userproject1.validator.ValidationResult;
@@ -23,7 +23,7 @@ import java.util.List;
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
     @MockBean
-    private UserServise userServise;
+    private UserService userService;
     @MockBean
     private UserValidator userValidator;
     @MockBean
@@ -38,14 +38,14 @@ public class UserControllerTest {
 
         List<User> userList = List.of(user1, user2);
 
-        Mockito.when(userServise.listAll()).thenReturn(userList);
+        Mockito.when(userService.listAll()).thenReturn(userList);
 
         mockMvc.perform(get("/user"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("allUserPage"))
                 .andExpect(model().attribute("UserList", userList));
 
-        verify(userServise, times(1)).listAll();
+        verify(userService, times(1)).listAll();
     }
 
     @Test
@@ -62,7 +62,7 @@ public class UserControllerTest {
         user1.setPassword("1234");
         ValidationResult validationResult = new ValidationResult();
         when(userValidator.isValid(user1)).thenReturn(validationResult);
-        when(userServise.create(user1)).thenReturn(user1);
+        when(userService.create(user1)).thenReturn(user1);
 
 
         mockMvc.perform(post("/user/create")
@@ -72,7 +72,7 @@ public class UserControllerTest {
                 .andExpect(redirectedUrl("/user"))
                 .andExpect(model().attributeDoesNotExist(("errors")));
 
-        verify(userServise, times(1)).create(user1);
+        verify(userService, times(1)).create(user1);
         verify(userValidator).isValid(user1);
     }
 
@@ -84,7 +84,7 @@ public class UserControllerTest {
         ValidationResult validationResult = new ValidationResult();
         validationResult.add(Error.of("invalid.mail", "Mail is empty!"));
         when(userValidator.isValid(any(User.class))).thenReturn(validationResult);
-        when(userServise.create(user1)).thenReturn(user1);
+        when(userService.create(user1)).thenReturn(user1);
 
         mockMvc.perform(post("/user/create")
                         .param("email", "test@gmail.com")
@@ -94,7 +94,7 @@ public class UserControllerTest {
                 .andExpect(model().attribute("errors", validationResult.getErrors()));
 
 
-        verify(userServise, never()).create(user1);
+        verify(userService, never()).create(user1);
     }
 
     @Test
@@ -102,25 +102,25 @@ public class UserControllerTest {
         User user1 = new User(1L, "asdasd@gmail.com", "1234");
 
         mockMvc.perform(post("/user/delete")
-                        .param("id", String.valueOf(user1.getUser_id())))
+                        .param("id", String.valueOf(user1.getId())))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user"));
 
-        verify(userServise, times(1)).deleteById(user1.getUser_id());
+        verify(userService, times(1)).deleteById(user1.getId());
     }
 
     @Test
     void getUpdateUserTest() throws Exception {
         User user1 = new User(1L, "asdasd@gmail.com", "1234");
 
-        when(userServise.getUser(user1.getUser_id())).thenReturn(user1);
+        when(userService.getUser(user1.getId())).thenReturn(user1);
 
         mockMvc.perform(get("/user/edit")
-                        .param("id", String.valueOf(user1.getUser_id())))
+                        .param("id", String.valueOf(user1.getId())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("editUserPage"))
                 .andExpect(model().attribute("User", user1));
-        verify(userServise, times(1)).getUser(user1.getUser_id());
+        verify(userService, times(1)).getUser(user1.getId());
     }
 
     @Test
@@ -130,17 +130,17 @@ public class UserControllerTest {
         ValidationResult validationResult = new ValidationResult();
 
         when(userValidator.isValid(user1)).thenReturn(validationResult);
-        doNothing().when(userServise).update(user1);
+        doNothing().when(userService).update(user1);
 
         mockMvc.perform(post("/user/edit")
-                        .param("id", String.valueOf(user1.getUser_id()))
+                        .param("id", String.valueOf(user1.getId()))
                         .param("email", String.valueOf(user1.getMail()))
                         .param("password", String.valueOf(user1.getPassword())))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user"))
                 .andExpect(model().attributeDoesNotExist(("errors")));
 
-        verify(userServise, times(1)).update(user1);
+        verify(userService, times(1)).update(user1);
         verify(userValidator).isValid(user1);
     }
 
@@ -151,16 +151,16 @@ public class UserControllerTest {
         ValidationResult validationResult = new ValidationResult();
         validationResult.add(Error.of("invalid.mail", "Mail is empty!"));
         when(userValidator.isValid(user1)).thenReturn(validationResult);
-        doNothing().when(userServise).update(user1);
+        doNothing().when(userService).update(user1);
 
         mockMvc.perform(post("/user/edit")
-                        .param("id", String.valueOf(user1.getUser_id()))
+                        .param("id", String.valueOf(user1.getId()))
                         .param("email", String.valueOf(user1.getMail()))
                         .param("password", String.valueOf(user1.getPassword())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("editUserPage"))
                 .andExpect(model().attribute("errors", validationResult.getErrors()));
 
-        verify(userServise, never()).create(user1);
+        verify(userService, never()).create(user1);
     }
 }

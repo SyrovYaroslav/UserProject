@@ -1,11 +1,10 @@
 package org.example.userproject1.endpoint;
 
 import lombok.RequiredArgsConstructor;
+import org.example.userproject1.dto.PhoneDto;
 import org.example.userproject1.entity.Phone;
-import org.example.userproject1.service.PhoneServise;
-import org.example.userproject1.service.UserServise;
-import org.example.userproject1.validator.PhoeValidator;
-import org.example.userproject1.validator.ValidationResult;
+import org.example.userproject1.service.PhoneService;
+import org.example.userproject1.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,14 +15,13 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/user/contacts")
 public class PhoneController {
 
-    private final PhoneServise phoneServise;
-    private final UserServise userServise;
-    private final PhoeValidator phoeValidator;
+    private final PhoneService phoneService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ModelAndView listContact(@PathVariable long id) {
         ModelAndView result = new ModelAndView("contactPage");
-        result.addObject("PhoneNumbers",phoneServise.userContacts(id));
+        result.addObject("PhoneNumbers", phoneService.userContacts(id));
         result.addObject("UserId", id);
         return result;
     }
@@ -37,22 +35,23 @@ public class PhoneController {
     public ModelAndView create(@PathVariable long id,
                                 @RequestParam String phone) {
         final Phone phoneTemp = new Phone();
-        phoneTemp.setPhone(phone);
-        phoneTemp.setUser(userServise.getUser(id));
-        ValidationResult validationResult = phoeValidator.isValid(phoneTemp);
-        if(validationResult.isValid()){
-            return new ModelAndView("createContactPage")
-                    .addObject("errors", validationResult.getErrors())
-                    .addObject("UserId", id);
+        phoneTemp.setPhoneNumber(phone);
+        phoneTemp.setUser(userService.getUser(id));
+
+        PhoneDto phoneDto = phoneService.saveContact(phoneTemp);
+
+        if (phoneDto.getError().isEmpty()){
+            return new ModelAndView(new RedirectView("/user/contacts/" + id));
         }
-        phoneServise.createContact(phoneTemp);
-        return new ModelAndView(new RedirectView("/user/contacts/" + id));
+        return new ModelAndView("createContactPage")
+                .addObject("errors", phoneDto.getError())
+                .addObject("UserId", id);
     }
 
     @PostMapping("/{id}/delete")
     public RedirectView delete(@PathVariable long id,
             @RequestParam long contact_id) {
-        phoneServise.deleteById(contact_id);
+        phoneService.deleteById(contact_id);
         return new RedirectView("/user/contacts/" + id);
     }
 
@@ -60,9 +59,8 @@ public class PhoneController {
     public ModelAndView edit(@PathVariable long id,
                              @RequestParam long contact_id) {
         ModelAndView result = new ModelAndView("editContactPage");
-        Phone phone = phoneServise.getPhone(contact_id);
-        result.addObject("Contact", phone.getPhone());
-        result.addObject("ContactId", phone.getId());
+        Phone phone = phoneService.getPhone(contact_id);
+        result.addObject("Phone", phone);
         result.addObject("UserId", id);
         return result;
     }
@@ -74,18 +72,17 @@ public class PhoneController {
                              ){
         final Phone phone = new Phone();
         phone.setId(contact_id);
-        phone.setPhone(phone_number);
-        phone.setUser(userServise.getUser(id));
-        ValidationResult validationResult = phoeValidator.isValid(phone);
-        if(validationResult.isValid()){
-            return new ModelAndView("editContactPage")
-                    .addObject("errors", validationResult.getErrors())
-                    .addObject("Contact", phone.getPhone())
-                    .addObject("ContactId", phone.getId())
-                    .addObject("UserId", id);
-        }
-        phoneServise.update(phone);
-        return new ModelAndView(new RedirectView("/user/contacts/" + id));
-    }
+        phone.setPhoneNumber(phone_number);
+        phone.setUser(userService.getUser(id));
 
+        PhoneDto phoneDto = phoneService.saveContact(phone);
+
+        if (phoneDto.getError().isEmpty()){
+            return new ModelAndView(new RedirectView("/user/contacts/" + id));
+        }
+        return new ModelAndView("editContactPage")
+                .addObject("errors", phoneDto.getError())
+                .addObject("Phone", phone)
+                .addObject("UserId", id);
+    }
 }

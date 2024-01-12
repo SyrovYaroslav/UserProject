@@ -13,14 +13,14 @@
 <ul>
     <li th:each="element : ${UserList}">
         <span th:text="${element}"></span>
-        <form th:action="@{'/user/contacts/' + ${element.getUser_id()}}" method="get" style="display: inline-block;">
+        <form th:action="@{'/user/contacts/' + ${element.getId()}}" method="get" style="display: inline-block;">
             <button type="submit" >Contact</button>
         </form>
         <form action="/user/delete" method="post" style="display: inline-block;">
-            <button type="submit" th:attr="name='id', value=${element.getUser_id()}">Delete</button>
+            <button type="submit" th:attr="name='id', value=${element.getId()}">Delete</button>
         </form>
         <form action="/user/edit" method="get" style="display: inline-block;">
-            <button type="submit" th:attr="name='id', value=${element.getUser_id()}">Edit</button>
+            <button type="submit" th:attr="name='id', value=${element.getId()}">Edit</button>
         </form>
     </li>
 </ul>

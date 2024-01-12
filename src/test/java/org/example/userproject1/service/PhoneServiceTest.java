@@ -1,6 +1,5 @@
 package org.example.userproject1.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.example.userproject1.entity.Phone;
 import org.example.userproject1.entity.User;
 import org.example.userproject1.repository.PhoneRepository;
@@ -21,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(MockitoExtension.class)
-public class PhoneServiseTest {
+public class PhoneServiceTest {
     @InjectMocks
-    private PhoneServise phoneServise;
+    private PhoneService phoneService;
 
     @Mock
     private PhoneRepository phoneRepository;
@@ -46,10 +45,10 @@ public class PhoneServiseTest {
     void listOfPhoneNumbers(){
         List<Phone> phoneList = List.of(phone1, phone2);
 
-        Mockito.when(userRepository.findById(user1.getUser_id())).thenReturn(Optional.of(user1));
+        Mockito.when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         Mockito.when(phoneRepository.findAll()).thenReturn(phoneList);
 
-        List<Phone> result = phoneServise.userContacts(1L);
+        List<Phone> result = phoneService.userContacts(1L);
 
         assertEquals(phoneList, result);
     }
@@ -57,38 +56,38 @@ public class PhoneServiseTest {
     @Test
     void listOfExceptionPhoneNumbers(){
         Mockito.when(userRepository.findById(phone1.getId())).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> phoneServise.userContacts(user1.getUser_id()));
+        assertThrows(IllegalArgumentException.class, () -> phoneService.userContacts(user1.getId()));
     }
 
     @Test
     void createContactTest(){
-        phoneServise.createContact(phone1);
+        phoneService.saveContact(phone1);
         Mockito.verify(phoneRepository, Mockito.times(1)).save(phone1);
     }
 
     @Test
     void deleteByIdTest() {
-        phoneServise.deleteById(phone1.getId());
+        phoneService.deleteById(phone1.getId());
         Mockito.verify(phoneRepository, Mockito.times(1)).deleteById(phone1.getId());
     }
 
     @Test
     void getPhoneTest() {
         Mockito.when(phoneRepository.findById(1L)).thenReturn(Optional.of(phone1));
-        Phone result = phoneServise.getPhone(phone1.getId());
+        Phone result = phoneService.getPhone(phone1.getId());
         assertEquals(phone1, result);
     }
 
     @Test
     void getExceptionPhoneTest() {
         Mockito.when(phoneRepository.findById(phone1.getId())).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> phoneServise.getPhone(phone1.getId()));
+        assertThrows(IllegalArgumentException.class, () -> phoneService.getPhone(phone1.getId()));
     }
 
     @Test
     void updateTest() {
         Mockito.when(phoneRepository.existsById(phone1.getId())).thenReturn(true);
-        phoneServise.update(phone1);
+        phoneService.update(phone1);
         Mockito.verify(phoneRepository, Mockito.times(1)).existsById(1L);
         Mockito.verify(phoneRepository, Mockito.times(1)).save(phone1);
     }
@@ -96,6 +95,6 @@ public class PhoneServiseTest {
     @Test
     void updateExceptionTest() {
         Mockito.when(phoneRepository.existsById(phone1.getId())).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> phoneServise.update(phone1));
+        assertThrows(IllegalArgumentException.class, () -> phoneService.update(phone1));
     }
 }

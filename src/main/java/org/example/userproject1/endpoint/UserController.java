@@ -1,10 +1,9 @@
 package org.example.userproject1.endpoint;
 
 import lombok.RequiredArgsConstructor;
+import org.example.userproject1.dto.UserDto;
 import org.example.userproject1.entity.User;
-import org.example.userproject1.service.UserServise;
-import org.example.userproject1.validator.UserValidator;
-import org.example.userproject1.validator.ValidationResult;
+import org.example.userproject1.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,21 +17,19 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserServise userServise;
-    private final UserValidator userValidator;
+    private final UserService userService;
 
     @GetMapping("")
     public ModelAndView list() {
         ModelAndView result = new ModelAndView("allUserPage");
-        result.addObject("UserList", userServise.listAll());
+        result.addObject("UserList", userService.listAll());
         return result;
     }
 
 
     @GetMapping("/create")
     public ModelAndView create() {
-        ModelAndView result = new ModelAndView("createUserPage");
-        return result;
+        return new ModelAndView("createUserPage");
     }
 
     @PostMapping("/create")
@@ -41,25 +38,24 @@ public class UserController {
         final User user = new User();
         user.setMail(email);
         user.setPassword(password);
-        ValidationResult validationResult = userValidator.isValid(user);
-        if(validationResult.isValid()){
-            return new ModelAndView("createUserPage")
-                    .addObject("errors", validationResult.getErrors());
+        UserDto userDto = userService.saveUser(user);
+        if (userDto.getError().isEmpty()){
+            return new ModelAndView(new RedirectView("/user"));
         }
-        userServise.create(user);
-        return new ModelAndView(new RedirectView("/user"));
+        return new ModelAndView("createUserPage")
+                .addObject("errors", userDto.getError());
     }
 
     @PostMapping("/delete")
     public RedirectView delete(@RequestParam long id) {
-        userServise.deleteById(id);
+        userService.deleteById(id);
         return new RedirectView("/user");
     }
 
     @GetMapping("/edit")
     public ModelAndView edit(@RequestParam long id) {
         ModelAndView result = new ModelAndView("editUserPage");
-        User user = userServise.getUser(id);
+        User user = userService.getUser(id);
         result.addObject("User", user);
         return result;
     }
@@ -69,16 +65,17 @@ public class UserController {
                              @RequestParam String email,
                              @RequestParam String password) {
         final User user = new User();
-        user.setUser_id(id);
+        user.setId(id);
         user.setMail(email);
         user.setPassword(password);
-        ValidationResult validationResult = userValidator.isValid(user);
-        if(validationResult.isValid()){
-            return new ModelAndView("editUserPage")
-                    .addObject("errors", validationResult.getErrors())
-                    .addObject("User", user);
+
+        UserDto userDto = userService.saveUser(user);
+
+        if (userDto.getError().isEmpty()){
+            return new ModelAndView(new RedirectView("/user"));
         }
-        userServise.update(user);
-        return new ModelAndView(new RedirectView("/user"));
+        return new ModelAndView("editUserPage")
+                .addObject("errors", userDto.getError())
+                .addObject("User", user);
     }
 }
