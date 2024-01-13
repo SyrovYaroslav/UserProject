@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список элементов</title>
+</head>
+<body>
+
+<h1>Edit Contact:</h1>
+<form th:href="@{'/user/contacts/' + ${UserId} + '/edit'}" method="post">
+    <div class="form-group">
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" name="phone_number" th:value="${Phone.getPhoneNumber()}" >
+    </div>
+    <button type="submit" th:attr="name='phone_id', value=${Phone.getId()}">Edit</button>
+</form>
+<div>
+    <p th:each="error : ${errors}" th:text="${error.getMessage()}"/>
+</div>
+<!--<a href="/user" type="button" class="btn btn-outline-primary btn-block mb-2">-->
+<!--    Відмінити-->
+<!--</a>-->
+</body>
+</html>

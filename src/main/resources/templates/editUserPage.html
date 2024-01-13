@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список элементов</title>
+</head>
+<body>
+
+<h1>Edit User:</h1>
+<form action="/user/edit" method="post">
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" th:value="${User.getMail()}">
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" th:value="${User.getPassword()}">
+    </div>
+    <button type="submit" th:attr="name='id', value=${User.getId()}">Edit</button>
+</form>
+<div>
+    <p th:each="error : ${errors}" th:text="${error.getMessage()}"/>
+</div>
+<!--<a href="/user" type="button" class="btn btn-outline-primary btn-block mb-2">-->
+<!--    Відмінити-->
+<!--</a>-->
+</body>
+</html>
