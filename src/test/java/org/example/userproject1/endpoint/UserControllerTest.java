@@ -1,11 +1,9 @@
 package org.example.userproject1.endpoint;
 
+import org.example.userproject1.dto.UserDto;
 import org.example.userproject1.entity.User;
-import org.example.userproject1.repository.UserRepository;
 import org.example.userproject1.service.UserService;
 import org.example.userproject1.validator.Error;
-import org.example.userproject1.validator.UserValidator;
-import org.example.userproject1.validator.ValidationResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +16,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
     @MockBean
     private UserService userService;
-    @MockBean
-    private UserValidator userValidator;
-    @MockBean
-    private UserRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
 
@@ -57,44 +52,48 @@ public class UserControllerTest {
 
     @Test
     void postCreateUserTest() throws Exception {
-        User user1 = new User();
-        user1.setMail("asdasd@gmail.com");
-        user1.setPassword("1234");
-        ValidationResult validationResult = new ValidationResult();
-        when(userValidator.isValid(user1)).thenReturn(validationResult);
-        when(userService.create(user1)).thenReturn(user1);
-
+        String email = "foas@gmail.com";
+        String password = "1234";
+        UserDto userDto = UserDto.builder()
+                .mail(email)
+                .password(password)
+                .error(new ArrayList<>())
+                .build();
+        when(userService.saveUser(email, password)).thenReturn(userDto);
 
         mockMvc.perform(post("/user/create")
-                        .param("email", user1.getMail())
-                        .param("password", user1.getPassword()))
+                        .param("email", email)
+                        .param("password", password))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user"))
                 .andExpect(model().attributeDoesNotExist(("errors")));
 
-        verify(userService, times(1)).create(user1);
-        verify(userValidator).isValid(user1);
+        verify(userService, times(1)).saveUser(email, password);
     }
 
     @Test
     void postCreateNonValidUserTest() throws Exception {
-        User user1 = new User();
-        user1.setMail("asdas7d@gmail.com");
-        user1.setPassword("1234");
-        ValidationResult validationResult = new ValidationResult();
-        validationResult.add(Error.of("invalid.mail", "Mail is empty!"));
-        when(userValidator.isValid(any(User.class))).thenReturn(validationResult);
-        when(userService.create(user1)).thenReturn(user1);
+        String email = "foasgmail.com";
+        String password = "1234";
+        List<Error>  errors = new ArrayList<>();
+        errors.add(Error.of("invalid.mail", "Mail is empty!"));
+        UserDto userDto = UserDto.builder()
+                .mail(email)
+                .password(password)
+                .error(errors)
+                .build();
+
+
+        when(userService.saveUser(email, password)).thenReturn(userDto);
 
         mockMvc.perform(post("/user/create")
-                        .param("email", "test@gmail.com")
-                        .param("password", "password"))
+                        .param("email", email)
+                        .param("password", password))
                 .andExpect(status().isOk())
                 .andExpect(view().name("createUserPage"))
-                .andExpect(model().attribute("errors", validationResult.getErrors()));
+                .andExpect(model().attribute(("errors"), errors));
 
-
-        verify(userService, never()).create(user1);
+        verify(userService, times(1)).saveUser(email, password);
     }
 
     @Test
@@ -125,42 +124,51 @@ public class UserControllerTest {
 
     @Test
     void postUpdateUserTest() throws Exception {
-        User user1 = new User(1L, "asdasd@gmail.com", "1234");
-
-        ValidationResult validationResult = new ValidationResult();
-
-        when(userValidator.isValid(user1)).thenReturn(validationResult);
-        doNothing().when(userService).update(user1);
+        long id = 1L;
+        String email = "foas@gmail.com";
+        String password = "1234";
+        UserDto userDto = UserDto.builder()
+                .id(id)
+                .mail(email)
+                .password(password)
+                .error(new ArrayList<>())
+                .build();
+        when(userService.saveUser(email, password, id)).thenReturn(userDto);
 
         mockMvc.perform(post("/user/edit")
-                        .param("id", String.valueOf(user1.getId()))
-                        .param("email", String.valueOf(user1.getMail()))
-                        .param("password", String.valueOf(user1.getPassword())))
+                        .param("id", String.valueOf(id))
+                        .param("email", email)
+                        .param("password", password))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user"))
                 .andExpect(model().attributeDoesNotExist(("errors")));
 
-        verify(userService, times(1)).update(user1);
-        verify(userValidator).isValid(user1);
+        verify(userService, times(1)).saveUser(email, password, id);
     }
 
     @Test
     void postUpdateNonValidUserTest() throws Exception {
-        User user1 = new User(1L, "asdasd@gmail.com", "1234");
-
-        ValidationResult validationResult = new ValidationResult();
-        validationResult.add(Error.of("invalid.mail", "Mail is empty!"));
-        when(userValidator.isValid(user1)).thenReturn(validationResult);
-        doNothing().when(userService).update(user1);
+        long id = 1L;
+        String email = "foasgmail.com";
+        String password = "1234";
+        List<Error>  errors = new ArrayList<>();
+        errors.add(Error.of("invalid.mail", "Mail is empty!"));
+        UserDto userDto = UserDto.builder()
+                .id(id)
+                .mail(email)
+                .password(password)
+                .error(errors)
+                .build();
+        when(userService.saveUser(email, password, id)).thenReturn(userDto);
 
         mockMvc.perform(post("/user/edit")
-                        .param("id", String.valueOf(user1.getId()))
-                        .param("email", String.valueOf(user1.getMail()))
-                        .param("password", String.valueOf(user1.getPassword())))
+                        .param("id", String.valueOf(id))
+                        .param("email", email)
+                        .param("password", password))
                 .andExpect(status().isOk())
                 .andExpect(view().name("editUserPage"))
-                .andExpect(model().attribute("errors", validationResult.getErrors()));
+                .andExpect(model().attribute("errors", errors));
 
-        verify(userService, never()).create(user1);
+        verify(userService, times(1)).saveUser(email, password, id);
     }
 }

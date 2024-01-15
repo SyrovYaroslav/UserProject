@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.userproject1.dto.PhoneDto;
 import org.example.userproject1.entity.Phone;
 import org.example.userproject1.service.PhoneService;
-import org.example.userproject1.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
