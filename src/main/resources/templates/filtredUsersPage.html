@@ -23,10 +23,10 @@
 
 <h1 style="text-align: center;">User List:</h1>
 
-<form th:href="@{'/user'}" method="get" style="text-align: center;">
+<form th:href="@{'/user'}" method="post" style="text-align: center;">
     <div class="form-group">
         <label for="like">Mail:</label>
-        <input type="text" id="like" name="like" th:value="${Like}">
+        <input type="text" id="like" name="like" th:value="${Like}>
         <button type="submit" class="btn btn-success">Search</button>
     </div>
 </form>
@@ -64,13 +64,13 @@
 <div style="display: flex; align-items: center; justify-content: center;">
     <ul style="list-style-type: none;  padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
         <li th:if="${currentPage > 0}">
-            <a th:href="${'/user?page=' + (currentPage - 1) + '&like=' + Like}">&lt; Previous</a>
+            <a th:href="${'/user?page=' + (currentPage - 1)}">&lt; Previous</a>
         </li>
         <li th:each="i : ${pageNumbers}" th:class="${i == currentPage} ? 'current-page' : ''">
-            <a th:href="${'/user?page=' + i + '&like=' + Like} " th:text="${i + 1}"></a>
+            <a th:href="${'/user?page=' + i}" th:text="${i + 1}"></a>
         </li>
         <li th:if="${currentPage < totalPages - 1}">
-            <a th:href="${'/user?page=' + (currentPage + 1) + '&like=' + Like}">Next &gt;</a>
+            <a th:href="${'/user?page=' + (currentPage + 1)}">Next &gt;</a>
         </li>
     </ul>
 </div>

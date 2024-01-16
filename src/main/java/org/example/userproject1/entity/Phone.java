@@ -1,10 +1,10 @@
 package org.example.userproject1.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
 
 @Builder
 @AllArgsConstructor
@@ -16,7 +16,9 @@ public class Phone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "phone")
+    @NotNull
+    @Size(min = 1, max = 15)
+    @Column(name = "phone", unique = true)
     private String phoneNumber;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
