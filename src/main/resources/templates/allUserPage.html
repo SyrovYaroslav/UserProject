@@ -11,11 +11,6 @@
             margin-top: 10px;
             margin-right: 10px;
         }
-        .current-page {
-            background-color: #ffff00;
-            color: white;
-            font-weight: bold;
-        }
     </style>
 </head>
 
@@ -64,13 +59,14 @@
 <div style="display: flex; align-items: center; justify-content: center;">
     <ul style="list-style-type: none;  padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
         <li th:if="${currentPage > 0}">
-            <a th:href="${'/user?page=' + (currentPage - 1) + '&like=' + Like}">&lt; Previous</a>
+            <a th:href="${'/user?page=' + (currentPage - 1) + '&like=' + Like}" type="button" class="btn btn-primary">&lt; Previous</a>
         </li>
-        <li th:each="i : ${pageNumbers}" th:class="${i == currentPage} ? 'current-page' : ''">
-            <a th:href="${'/user?page=' + i + '&like=' + Like} " th:text="${i + 1}"></a>
+        <li th:each="i : ${pageNumbers}" >
+            <a th:href="${'/user?page=' + i + '&like=' + Like} " type="button"
+               th:class="${i == currentPage} ? 'btn btn-outline-primary' : 'btn btn-primary'" th:text="${i + 1}"></a>
         </li>
         <li th:if="${currentPage < totalPages - 1}">
-            <a th:href="${'/user?page=' + (currentPage + 1) + '&like=' + Like}">Next &gt;</a>
+            <a th:href="${'/user?page=' + (currentPage + 1) + '&like=' + Like}" type="button" class="btn btn-primary">Next &gt;</a>
         </li>
     </ul>
 </div>

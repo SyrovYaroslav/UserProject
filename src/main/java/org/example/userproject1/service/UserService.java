@@ -8,7 +8,6 @@ import org.example.userproject1.repository.UserRepository;
 import org.example.userproject1.validator.UserValidator;
 import org.example.userproject1.validator.ValidationResult;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class UserService {
 
     private final UserValidator userValidator;
     public Page<User> listAll(int page, int size, String query) {
-        return query.isEmpty()?userRepository.findAll(PageRequest.of(page, size))
+        return query.isEmpty() ?userRepository.findAll(PageRequest.of(page, size))
                 :userRepository.findUsersByQuery(query,PageRequest.of(page, size));
     }
 

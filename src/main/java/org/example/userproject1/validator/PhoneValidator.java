@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 @Component
 public class PhoneValidator implements Validator<Phone>{
     private static final String PHONE_REGEX =
-            "^\\+?[0-9]+$";
+            "^[0-9]{4,15}$";
     private static final Pattern pattern = Pattern.compile(PHONE_REGEX);
     private final PhoneRepository phoneRepository;
     @Override

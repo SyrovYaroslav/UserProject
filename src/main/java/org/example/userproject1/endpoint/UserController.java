@@ -24,15 +24,15 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public ModelAndView list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String like) {
-        ModelAndView result = new ModelAndView("allUserPage");
-        Page<User> userPage = userService.listAll(page, 9, like);
-        result.addObject("UserList", userPage.getContent());
-        result.addObject("Like", like);
-        result.addObject("currentPage", userPage.getNumber());
-        result.addObject("totalPages", userPage.getTotalPages());
-        result.addObject("pageNumbers", userService.pageSlicer(userPage.getNumber(), userPage.getTotalPages()));
-        return result;
+    public ModelAndView list(@RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "") String like) {
+        Page<User> userPage = userService.listAll(page, 1, like);
+        return new ModelAndView("allUserPage")
+                .addObject("UserList", userPage.getContent())
+                .addObject("Like", like)
+                .addObject("currentPage", userPage.getNumber())
+                .addObject("totalPages", userPage.getTotalPages())
+                .addObject("pageNumbers", userService.pageSlicer(userPage.getNumber(), userPage.getTotalPages()));
     }
 
     @GetMapping("/create")

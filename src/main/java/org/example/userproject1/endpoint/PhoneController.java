@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.userproject1.dto.PhoneDto;
 import org.example.userproject1.entity.Phone;
 import org.example.userproject1.service.PhoneService;
+import org.example.userproject1.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,14 +17,20 @@ import org.springframework.web.servlet.view.RedirectView;
 public class PhoneController {
 
     private final PhoneService phoneService;
-
+    private final UserService userService;
 
     @GetMapping("/{id}")
-    public ModelAndView listContact(@PathVariable long id) {
-        ModelAndView result = new ModelAndView("contactPage");
-        result.addObject("PhoneNumbers", phoneService.userContacts(id));
-        result.addObject("UserId", id);
-        return result;
+    public ModelAndView listContact(@PathVariable long id,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "") String like) {
+        Page<Phone> contactPage = phoneService.userContacts(id, page, 1, like);
+        return new ModelAndView("contactPage")
+                .addObject("PhoneNumbers", contactPage.getContent())
+                .addObject("UserId", id)
+                .addObject("Like", like)
+                .addObject("currentPage", contactPage.getNumber())
+                .addObject("totalPages", contactPage.getTotalPages())
+                .addObject("pageNumbers", userService.pageSlicer(contactPage.getNumber(), contactPage.getTotalPages()));
     }
 
     @GetMapping("/{id}/create")
