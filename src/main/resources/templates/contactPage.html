@@ -8,13 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <title>User List</title>
     <style>
-        li {
-            list-style-type: none;
-            counter-increment: my-counter;
-        }
-        li:before {
-            content: counter(my-counter) ")";
-        }
         .button-container {
             text-align: right;
             margin-top: 10px;
@@ -27,9 +20,15 @@
 <body>
 
 <h1 style="text-align: center;">Contact list:</h1>
+<form th:href="@{'/user/contacts/' + ${UserId}}" method="get" style="text-align: center;">
+    <div class="form-group">
+        <label for="like">Phone:</label>
+        <input type="text" id="like" name="like" th:value="${Like}">
+        <button type="submit" class="btn btn-success">Search</button>
+    </div>
+</form>
 
-
-<ul>
+<ol>
     <li th:each="element : ${PhoneNumbers}">
         <form th:action="@{'/user/contacts/' + ${UserId} + '/edit'}" method="get" style="display: inline-block;">
             <button type="submit" class="btn btn-warning" th:attr="name='contact_id', value=${element.getId()}"
@@ -41,12 +40,29 @@
                     style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
             >Delete</button>
         </form>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone-forward" viewBox="0 0 16 16">
+            <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877zm10.762.135a.5.5 0 0 1 .708 0l2.5 2.5a.5.5 0 0 1 0 .708l-2.5 2.5a.5.5 0 0 1-.708-.708L14.293 4H9.5a.5.5 0 0 1 0-1h4.793l-1.647-1.646a.5.5 0 0 1 0-.708"/>
+        </svg>
         <span th:text="${element.getPhoneNumber()}"></span>
     </li>
-</ul>
+</ol>
 <div class="button-container">
     <a th:href="@{'/user/contacts/' + ${UserId} + '/create'}" type="button" class="btn btn-success" >Create</a>
     <a href="/user" type="button" class="btn btn-primary">Back</a>
+</div>
+<div style="display: flex; align-items: center; justify-content: center;">
+    <ul style="list-style-type: none;  padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
+        <li th:if="${currentPage > 0}">
+            <a th:href="${'/user/contacts/' + UserId + '?page=' + (currentPage - 1) + '&like=' + Like}" type="button" class="btn btn-primary">&lt; Previous</a>
+        </li>
+        <li th:each="i : ${pageNumbers}" >
+            <a th:href="${'/user/contacts/' + UserId + '?page=' + i + '&like=' + Like}" type="button"
+               th:class="${i == currentPage} ? 'btn btn-outline-primary' : 'btn btn-primary'" th:text="${i + 1}"></a>
+        </li>
+        <li th:if="${currentPage < totalPages - 1}">
+            <a th:href="${'/user/contacts/' + UserId + '?page=' + (currentPage + 1) + '&like=' + Like}" type="button" class="btn btn-primary">Next &gt;</a>
+        </li>
+    </ul>
 </div>
 </body>
 </html>

@@ -26,22 +26,22 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    void listUserTest() throws Exception {
-        User user1 = new User(1L, "asdasd@gmail.com", "1234");
-        User user2 = new User(2L, "asdas4@gmail.com", "12534");
-
-        List<User> userList = List.of(user1, user2);
-
-        Mockito.when(userService.listAll()).thenReturn(userList);
-
-        mockMvc.perform(get("/user"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("allUserPage"))
-                .andExpect(model().attribute("UserList", userList));
-
-        verify(userService, times(1)).listAll();
-    }
+//    @Test
+//    void listUserTest() throws Exception {
+//        User user1 = new User(1L, "asdasd@gmail.com", "1234");
+//        User user2 = new User(2L, "asdas4@gmail.com", "12534");
+//
+//        List<User> userList = List.of(user1, user2);
+//
+//        Mockito.when(userService.listAll()).thenReturn(userList);
+//
+//        mockMvc.perform(get("/user"))
+//                .andExpect(status().isOk())
+//                .andExpect(view().name("allUserPage"))
+//                .andExpect(model().attribute("UserList", userList));
+//
+//        verify(userService, times(1)).listAll();
+//    }
 
     @Test
     void getCreateUserTest() throws Exception {

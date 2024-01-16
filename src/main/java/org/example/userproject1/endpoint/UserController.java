@@ -1,9 +1,12 @@
 package org.example.userproject1.endpoint;
 
+
 import lombok.RequiredArgsConstructor;
 import org.example.userproject1.dto.UserDto;
 import org.example.userproject1.entity.User;
 import org.example.userproject1.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -20,12 +24,16 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public ModelAndView list() {
-        ModelAndView result = new ModelAndView("allUserPage");
-        result.addObject("UserList", userService.listAll());
-        return result;
+    public ModelAndView list(@RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "") String like) {
+        Page<User> userPage = userService.listAll(page, 1, like);
+        return new ModelAndView("allUserPage")
+                .addObject("UserList", userPage.getContent())
+                .addObject("Like", like)
+                .addObject("currentPage", userPage.getNumber())
+                .addObject("totalPages", userPage.getTotalPages())
+                .addObject("pageNumbers", userService.pageSlicer(userPage.getNumber(), userPage.getTotalPages()));
     }
-
 
     @GetMapping("/create")
     public ModelAndView create() {
@@ -41,6 +49,7 @@ public class UserController {
                 :new ModelAndView("createUserPage")
                 .addObject("errors", userDto.getError());
     }
+
 
     @PostMapping("/delete")
     public RedirectView delete(@RequestParam long id) {

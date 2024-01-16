@@ -6,14 +6,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <title>User List</title>
     <style>
-        li {
-            list-style-type: none;
-            counter-increment: my-counter;
-        }
-        li:before {
-            content: counter(my-counter) ")";
-        }
-
         .button-container {
             text-align: right;
             margin-top: 10px;
@@ -26,6 +18,13 @@
 
 <h1 style="text-align: center;">User List:</h1>
 
+<form th:href="@{'/user'}" method="get" style="text-align: center;">
+    <div class="form-group">
+        <label for="like">Mail:</label>
+        <input type="text" id="like" name="like" th:value="${Like}">
+        <button type="submit" class="btn btn-success">Search</button>
+    </div>
+</form>
 <ol>
     <li th:each="element, index : ${UserList}">
         <form th:action="@{'/user/contacts/' + ${element.getId()}}" method="get" style="display: inline-block;">
@@ -51,11 +50,25 @@
             <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
         </svg>
         <span th:text="'email: ' + ${element.getMail()} + ' | password: ' + ${element.getPassword()}"></span>
+
     </li>
 </ol>
-
 <div class="button-container">
     <a href="/user/create" type="button" class="btn btn-success">Create</a>
+</div>
+<div style="display: flex; align-items: center; justify-content: center;">
+    <ul style="list-style-type: none;  padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
+        <li th:if="${currentPage > 0}">
+            <a th:href="${'/user?page=' + (currentPage - 1) + '&like=' + Like}" type="button" class="btn btn-primary">&lt; Previous</a>
+        </li>
+        <li th:each="i : ${pageNumbers}" >
+            <a th:href="${'/user?page=' + i + '&like=' + Like} " type="button"
+               th:class="${i == currentPage} ? 'btn btn-outline-primary' : 'btn btn-primary'" th:text="${i + 1}"></a>
+        </li>
+        <li th:if="${currentPage < totalPages - 1}">
+            <a th:href="${'/user?page=' + (currentPage + 1) + '&like=' + Like}" type="button" class="btn btn-primary">Next &gt;</a>
+        </li>
+    </ul>
 </div>
 </body>
 </html>

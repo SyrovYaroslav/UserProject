@@ -10,6 +10,9 @@ import org.example.userproject1.repository.PhoneRepository;
 import org.example.userproject1.repository.UserRepository;
 import org.example.userproject1.validator.PhoneValidator;
 import org.example.userproject1.validator.ValidationResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,21 +20,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+
+
+
 @RequiredArgsConstructor
 @Service
 public class PhoneService {
     private final PhoneRepository phoneRepository;
-    private final UserRepository userRepository;
     private final PhoneValidator phoneValidator;
     private final UserService userService;
-    public List<Phone> userContacts(long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id=" + id + " does not exist"));
-        return phoneRepository.
-                findAll()
-                .stream()
-                .filter(o -> Objects.equals(o.getUser().getId(), user.getId()))
-                .collect(Collectors.toList());
+    public Page<Phone> userContacts(long id, int page, int size, String query) {
+        return query.isEmpty()? phoneRepository.findAllPhoneByUserId(id,PageRequest.of(page, size)):
+                phoneRepository.findPhoneByQuery(query,id, PageRequest.of(page, size));
     }
 
     public PhoneDto saveContact(long id, String phone) {

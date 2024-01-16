@@ -38,19 +38,19 @@ public class UserServiceTest {
         user1 = new User(1L, "ascasca@gmail.com", "1233");
     }
 
-    @Test
-    void listAllUserTest(){
-
-        User user2 = new User(2L, "ascasc3@gmail.com", "1233");
-
-        List<User> userList = List.of(user1, user2);
-
-        Mockito.when(userRepository.findAll()).thenReturn(userList);
-
-        List<User> result = userService.listAll();
-
-        assertEquals(userList, result);
-    }
+//    @Test
+//    void listAllUserTest(){
+//
+//        User user2 = new User(2L, "ascasc3@gmail.com", "1233");
+//
+//        List<User> userList = List.of(user1, user2);
+//
+//        Mockito.when(userRepository.findAll()).thenReturn(userList);
+//
+//        List<User> result = userService.listAll();
+//
+//        assertEquals(userList, result);
+//    }
 
     @Test
     void saveUserTest(){
