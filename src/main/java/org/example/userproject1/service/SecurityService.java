@@ -33,7 +33,7 @@ public class SecurityService {
                 .username(username)
                 .password(password)
                 .email(email)
-                .roles(Collections.singleton(SecurityUserRole.USER))
+                .roles(Collections.singletonList(SecurityUserRole.USER))
                 .build();
         ValidationResult validationResult = securityUserValidator.isValid(user);
         if (!password.equals(confirmPassword)) {

@@ -32,5 +32,5 @@ public class SecurityUser {
     @ElementCollection(targetClass = SecurityUserRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "security_user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<SecurityUserRole> roles;
+    private List<SecurityUserRole> roles;
 }
