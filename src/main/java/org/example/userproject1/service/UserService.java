@@ -24,7 +24,7 @@ public class UserService {
 
     private final UserValidator userValidator;
     public Page<User> listAll(int page, int size, String query) {
-        return query.isEmpty() ?userRepository.findAll(PageRequest.of(page, size))
+        return query.isEmpty()?userRepository.findAll(PageRequest.of(page, size))
                 :userRepository.findUsersByQuery(query,PageRequest.of(page, size));
     }
 

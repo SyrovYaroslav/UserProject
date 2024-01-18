@@ -6,6 +6,7 @@ import org.example.userproject1.entity.Phone;
 import org.example.userproject1.service.PhoneService;
 import org.example.userproject1.service.UserService;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +21,7 @@ public class PhoneController {
     private final UserService userService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ModelAndView listContact(@PathVariable long id,
                                     @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "") String like) {
@@ -40,7 +42,7 @@ public class PhoneController {
 
     @PostMapping("/{id}/create")
     public ModelAndView create(@PathVariable long id,
-                                @RequestParam String phone) {
+                               @RequestParam String phone) {
 
 
         PhoneDto phoneDto = phoneService.saveContact(id, phone);
@@ -54,7 +56,7 @@ public class PhoneController {
 
     @PostMapping("/{id}/delete")
     public RedirectView delete(@PathVariable long id,
-            @RequestParam long contact_id) {
+                               @RequestParam long contact_id) {
         phoneService.deleteById(contact_id);
         return new RedirectView("/user/contacts/" + id);
     }
@@ -73,7 +75,7 @@ public class PhoneController {
     public ModelAndView edit(@PathVariable long id,
                              @RequestParam String phone_number,
                              @RequestParam long phone_id
-                             ){
+    ){
         PhoneDto phoneDto = phoneService.saveContact(id, phone_number, phone_id);
 
         return phoneDto.getError().isEmpty()

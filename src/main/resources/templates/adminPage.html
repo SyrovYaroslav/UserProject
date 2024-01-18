@@ -16,12 +16,12 @@
 
 <body>
 <div class="d-flex justify-content-between">
-    <h1 class="text-center mx-auto">User List:</h1>
-    <div class="button-container">
+    <h1 class="text-center mx-auto">Account List:</h1>
+    <div>
         <a href="/logout" type="button" class="btn btn-danger">Sign Out</a>
     </div>
-    <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="button-container">
-        <a href="/admin" type="button" class="btn btn-danger">Admin</a>
+    <div class="button-container">
+        <a href="/user" type="button" class="btn btn-success">Admin</a>
     </div>
 </div>
 <form th:href="@{'/user'}" method="get" style="text-align: center;">
@@ -32,47 +32,26 @@
     </div>
 </form>
 <ol>
-    <li th:each="element, index : ${UserList}">
-        <form th:action="@{'/user/contacts/' + ${element.getId()}}" method="get" style="display: inline-block;">
-            <button type="submit" class="btn btn-info"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                Contact
-            </button>
-        </form>
-        <form action="/user/edit" method="get" style="display: inline-block;">
-            <button type="submit" class="btn btn-warning" th:attr="name='id', value=${element.getId()}"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                Edit
-            </button>
-        </form>
-        <form action="/user/delete" method="post" style="display: inline-block;">
-            <button type="submit" class="btn btn-danger" th:attr="name='id', value=${element.getId()}"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                Delete
-            </button>
-        </form>
+    <li th:each="element, index : ${Accounts}">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
             <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
         </svg>
-        <span th:text="'email: ' + ${element.getMail()} + ' | password: ' + ${element.getPassword()}"></span>
+        <span th:text="${element}"></span>
 
     </li>
 </ol>
-<div class="button-container">
-    <a href="/user/create" type="button" class="btn btn-success">Create</a>
-</div>
 <div style="display: flex; align-items: center; justify-content: center;">
     <ul style="list-style-type: none;  padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
         <li th:if="${currentPage > 0}">
-            <a th:href="${'/user?page=' + (currentPage - 1) + '&like=' + Like}" type="button" class="btn btn-primary">&lt; Previous</a>
+            <a th:href="${'/admin?page=' + (currentPage - 1) + '&like=' + Like}" type="button" class="btn btn-primary">&lt; Previous</a>
         </li>
         <li th:each="i : ${pageNumbers}" >
-            <a th:href="${'/user?page=' + i + '&like=' + Like} " type="button"
+            <a th:href="${'/admin?page=' + i + '&like=' + Like} " type="button"
                th:class="${i == currentPage} ? 'btn btn-outline-primary' : 'btn btn-primary'" th:text="${i + 1}"></a>
         </li>
         <li th:if="${currentPage < totalPages - 1}">
-            <a th:href="${'/user?page=' + (currentPage + 1) + '&like=' + Like}" type="button" class="btn btn-primary">Next &gt;</a>
+            <a th:href="${'/admin?page=' + (currentPage + 1) + '&like=' + Like}" type="button" class="btn btn-primary">Next &gt;</a>
         </li>
     </ul>
 </div>
