@@ -26,10 +26,17 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         if(securityUser == null){
             throw new UsernameNotFoundException(String.format("User %s not found", username));
         }
+
+
         return User
                 .withUsername(securityUser.getUsername())
                 .password(securityUser.getPassword())
-                .roles((securityUser.getRoles().stream().findAny().get().toString()))
+                .roles(securityUser.getRoles().stream().map(SecurityUserRole::name).collect(Collectors.joining(";")))
                 .build();
+//        return User
+//                .withUsername(securityUser.getUsername())
+//                .password(securityUser.getPassword())
+//                .roles((securityUser.getRoles().stream().findAny().get().toString()))
+//                .build();
     }
 }

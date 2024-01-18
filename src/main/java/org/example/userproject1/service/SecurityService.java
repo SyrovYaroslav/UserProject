@@ -14,9 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -33,7 +31,7 @@ public class SecurityService {
                 .username(username)
                 .password(password)
                 .email(email)
-                .roles(Collections.singletonList(SecurityUserRole.USER))
+                .roles(new HashSet<>(Arrays.asList(SecurityUserRole.USER, SecurityUserRole.ADMIN)))
                 .build();
         ValidationResult validationResult = securityUserValidator.isValid(user);
         if (!password.equals(confirmPassword)) {
