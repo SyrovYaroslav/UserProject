@@ -34,6 +34,8 @@ public class WebSecurityConfig {
                 )
                 .logout(auth -> auth
                         .logoutSuccessUrl("/login")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .rememberMe(me -> me.key("uniqueAndSecret"))
