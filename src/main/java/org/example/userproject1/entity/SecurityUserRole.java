@@ -1,18 +1,13 @@
 package org.example.userproject1.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Data
-@Builder
-public class SecurityUserRole {
-    @Id
-    private String role;
+
+public enum SecurityUserRole implements GrantedAuthority {
+    USER, ADMIN;
+
+    @Override
+    public String getAuthority(){
+        return name();
+    }
 }

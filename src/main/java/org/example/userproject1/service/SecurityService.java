@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,30 +28,21 @@ public class SecurityService {
     private SecurityUserValidator securityUserValidator;
     public List<Error> addNewSecurityUser(String username, String email,
                                            String password, String confirmPassword) {
-        SecurityUser securityUser = securityUserRepository.findByUsername(username);
-
-        if (securityUser != null) {
-            throw new RuntimeException("SecurityUser exist");
-        }
-
-        SecurityUserRole userRole = new SecurityUserRole();
-        userRole.setRole("USER");
         SecurityUser user = SecurityUser.builder()
                 .userId(UUID.randomUUID().toString())
                 .username(username)
                 .password(password)
                 .email(email)
-                .roles(List.of(userRole))
+                .roles(Collections.singleton(SecurityUserRole.USER))
                 .build();
         ValidationResult validationResult = securityUserValidator.isValid(user);
         if (!password.equals(confirmPassword)) {
             validationResult.add(Error.of("invalid.password", "Password is not match!"));
         }
-        if(validationResult.isValid()) {
-            return validationResult.getErrors();
+        if(validationResult.getErrors().isEmpty()){
+            user.setPassword(passwordEncoder.encode(password));
+            securityUserRepository.save(user);
         }
-        user.setPassword(passwordEncoder.encode(password));
-        securityUserRepository.save(user);
         return validationResult.getErrors();
     }
 

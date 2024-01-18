@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +28,9 @@ public class SecurityUser {
     private String password;
     @Size(min = 1, max = 100)
     private String email;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<SecurityUserRole> roles;
+
+    @ElementCollection(targetClass = SecurityUserRole.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "security_user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<SecurityUserRole> roles;
 }
